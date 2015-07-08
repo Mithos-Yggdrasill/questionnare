@@ -5,7 +5,7 @@ require_once 'entity/Question.php';
 /**
  * Description of QuestionRepository
  *
- * @author Pieter
+ * @author Pieter - #oSoc15
  */
 class QuestionRepository {
 

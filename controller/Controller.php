@@ -5,7 +5,7 @@ require_once 'service/Questionnaire.php';
 /**
  * Description of Controller
  *
- * @author Pieter
+ * @author Pieter - #oSoc15
  */
 class Controller {
 
