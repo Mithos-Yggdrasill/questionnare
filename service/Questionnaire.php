@@ -1,5 +1,8 @@
 <?php
 
+//TODO: door uw questions kunnen lopen
+//TODO: vragen bijhouden
+
 require_once 'entity/Answer.php';
 require_once 'db/QuestionRepository.php';
 require_once 'db/AnswerRepository.php';
@@ -14,12 +17,12 @@ class Questionnaire {
     public $_answers;
     private $_questionDb;
     private $_answerDb;
+    private $_current;
 
     /**
      *  The current question in the questionnaire.
      */
     private $_currentQuestion;
-    private $_current;
 
     public function __construct() {
         //initialize db
@@ -58,13 +61,21 @@ class Questionnaire {
         $this->_current = 0;
         $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
         $this->_answers = array();
+        
     }
 
+    public function reset(){
+        $this->_current = 0;
+    }
+    
     public function getAllQuestions() {
         return $this->_questionDb->getAllQuestions();
     }
 
     public function getCurrentQuestion() {
+        if(empty($this->_currentQuestion)){
+            $this->_currentQuestion = $this->getAllQuestions()[0];
+        }
         return $this->_currentQuestion;
     }
 
@@ -73,14 +84,18 @@ class Questionnaire {
     }
 
     public function nextQuestion() {
+        if($this->_current > count($this->getAllQuestions())-2){
+            throw new Exception('kaka');
+        }
         $this->_current = $this->_current + 1;
-        var_dump($this->_current);
         $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
     }
 
     public function previousQuestion() {
-        $this->_current -=1;
-        $this->_currentQuestion = $this->_questions[$this->_current];
+        //if($this->_current > 0) {
+            //$this->_current -=1;
+        //}
+        $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
     }
 
     public function answerQuestion($questionId, $answer) {

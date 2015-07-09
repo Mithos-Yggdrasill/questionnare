@@ -39,17 +39,24 @@ class Controller {
         switch ($action) {
             case 'home':
                 $nextPage = 'index.php';
+                $this->_service->reset();
                 $this->_question = $this->_service->getCurrentQuestion();
                 break;
             case 'answerQuestion' :
                 $nextPage = 'index.php';
                 $answerIndex = filter_input(INPUT_GET, 'answerIndex', FILTER_SANITIZE_NUMBER_INT);               
-                $this->_service->answerQuestion($this->getQuestionId(), $this->_service->getCurrentQuestionAnswer($answerIndex));
+                try {
+                    $this->_service->answerQuestion($this->getQuestionId(), $this->_service->getCurrentQuestionAnswer($answerIndex));
+                } catch (Exception $e){
+                    $nextPage = 'result.php';
+                }
                 $this->_question = $this->_service->getCurrentQuestion();
                 $this->_answers = $this->_service->_answers;
                 break;
             case 'previousQuestion' :
                 $nextPage = 'index.php';
+                $this->_service->previousQuestion();
+                $this->_question = $this->_service->getCurrentQuestion();
                 break;
         }
         require_once 'view/' . $nextPage;

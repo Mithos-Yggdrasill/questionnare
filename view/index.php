@@ -20,6 +20,7 @@
                 <button type="submit">Volgende</button>
             </p>
         </form>
+        <a href="index.php?action=previousQuestion">Vorige</a>
         <?php foreach ($this->_answers as $questionId => $answer) { ?>
             <p><?php //echo $this->_questions[$questionId]->getQuestion() . $answer->getAnswer(); ?></p>
         <?php } ?>
