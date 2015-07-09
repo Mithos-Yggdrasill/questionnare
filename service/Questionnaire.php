@@ -1,9 +1,9 @@
 <?php
 
 //TODO: door uw questions kunnen lopen
-//TODO: vragen bijhouden
 
 require_once 'entity/Answer.php';
+require_once 'entity/House.php';
 require_once 'db/QuestionRepository.php';
 require_once 'db/AnswerRepository.php';
 
@@ -14,10 +14,9 @@ require_once 'db/AnswerRepository.php';
  */
 class Questionnaire {
 
-    public $_answers;
     private $_questionDb;
     private $_answerDb;
-    private $_current;
+    private $_house;
 
     /**
      *  The current question in the questionnaire.
@@ -40,6 +39,10 @@ class Questionnaire {
         $answer7 = new Answer('1970-2000', 2);
         $answer8 = new Answer('> 2000', 1);
 
+        $answer9 = new Answer('Gemengd', 2);
+        $answer10 = new Answer('Schuin', 2);
+        $answer11 = new Answer('Plat', 3);
+
         $this->addAnswer($answer1);
         $this->addAnswer($answer2);
         $this->addAnswer($answer3);
@@ -48,32 +51,34 @@ class Questionnaire {
         $this->addAnswer($answer6);
         $this->addAnswer($answer7);
         $this->addAnswer($answer8);
+        $this->addAnswer($answer9);
+        $this->addAnswer($answer10);
+        $this->addAnswer($answer11);
 
         $question1 = new Question('Ik woon in?', 2, array($answer1, $answer2, $answer3));
         $question2 = new Question('Mijn huis is gebouwd', 3, array($answer4, $answer5, $answer6, $answer7, $answer8));
-        $question3 = new Question('Mijn dak is?', 5, array(new Answer('Gemengd', 2), new Answer('Schuin', 2), new Answer('Plat', 3)));
+        $question3 = new Question('Mijn dak is?', 5, array($answer9, $answer10, $answer11));
 
         $this->addQuestion($question1);
         $this->addQuestion($question2);
         $this->addQuestion($question3);
 
         //setup service
-        $this->_current = 0;
-        $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
-        $this->_answers = array();
-        
+        $this->_currentQuestion = $this->getAllQuestions()[0];
+        $this->_house = new House();
     }
 
-    public function reset(){
-        $this->_current = 0;
+    public function reset() {
+        $this->_house = new House();
+        $this->_currentQuestion = $this->getAllQuestions()[0];
     }
-    
+
     public function getAllQuestions() {
         return $this->_questionDb->getAllQuestions();
     }
 
     public function getCurrentQuestion() {
-        if(empty($this->_currentQuestion)){
+        if (empty($this->_currentQuestion)) {
             $this->_currentQuestion = $this->getAllQuestions()[0];
         }
         return $this->_currentQuestion;
@@ -83,27 +88,21 @@ class Questionnaire {
         return $this->_currentQuestion->getAnswer()[$index];
     }
 
-    public function nextQuestion() {
-        if($this->_current > count($this->getAllQuestions())-2){
-            throw new Exception('kaka');
-        }
-        $this->_current = $this->_current + 1;
-        $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
-    }
-
-    public function previousQuestion() {
-        //if($this->_current > 0) {
-            //$this->_current -=1;
-        //}
-        $this->_currentQuestion = $this->getAllQuestions()[$this->_current];
-    }
-
-    public function answerQuestion($questionId, $answer) {
-        $this->_answers[$questionId] = $answer;
+    public function answerQuestion($questionId, $answerId) {
+        $this->_house->addInfo($questionId, $answerId);
         $this->nextQuestion();
     }
 
-    /* *********************************************
+    public function nextQuestion() {
+        $answerdQuestionIds = array_keys($this->_house->getInfo());
+        $notAnsweredQuestions = $this->getNotAnsweredQuestion($answerdQuestionIds);
+        if (empty($notAnsweredQuestions)) {
+            throw new Exception('kaka');
+        }
+        $this->_currentQuestion = $notAnsweredQuestions[0];
+    }
+
+    /*     * ********************************************
      * CREATE ANSWERS
      * ********************************************* */
 
@@ -111,12 +110,24 @@ class Questionnaire {
         $this->_answerDb->addAnswer($answer);
     }
 
-    /* *********************************************
+    public function getAnswer($answerId) {
+        return $this->_answerDb->getAnswer($answerId);
+    }
+
+    /*     * ********************************************
      * CREATE QUESTIONS
      * ********************************************* */
 
     public function addQuestion($question) {
         $this->_questionDb->addQuestion($question);
+    }
+
+    public function getNotAnsweredQuestion($answeredQuestionIds) {
+        return $this->_questionDb->getAllQuestionsButThese($answeredQuestionIds);
+    }
+
+    public function getQuestion($questionId) {
+        return $this->_questionDb->getQuestion($questionId);
     }
 
 }

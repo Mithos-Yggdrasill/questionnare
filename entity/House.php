@@ -7,13 +7,18 @@
  */
 class House {
     
-    private $_questions;
-    
-    private $_answers;
+    private $_info;
     
     public function __construct(){
-        $this->_questions = array();
-        $this->_answers = array();
+        $this->_info = array();
+    }
+    
+    public function addInfo($question, $answer){
+        $this->_info[$question] = $answer;
+    }
+    
+    public function getInfo(){
+        return $this->_info;
     }
     
 }

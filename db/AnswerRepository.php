@@ -50,6 +50,10 @@ class AnswerRepository {
         $this->_answers[$this->_answerId] = $answer;
         $this->_answerId = $this->_answerId+1;
     }
+    
+    public function getAnswer($answerId){
+        return $this->_answers[$answerId];
+    }
 
     public function getAllAnswers() {
         return $this->_answers;

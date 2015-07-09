@@ -52,6 +52,20 @@ class QuestionRepository {
         $this->_questionId = $this->_questionId+1;
     }
 
+    public function getQuestion($questionId){
+        return $this->_questions[$questionId];
+    }
+    
+    public function getAllQuestionsButThese($questionIds){
+        $result = array();
+        foreach ($this->_questions as $questionId => $question){
+            if (!in_array($questionId, $questionIds)){
+                array_push($result, $question);
+            }
+        }
+        return $result;
+    }
+    
     public function getAllQuestions() {
         return $this->_questions;
     }
